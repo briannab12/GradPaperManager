@@ -47,7 +47,7 @@
 					<button type="button" value="guest" class="login-button btn btn-primary">Continue as Guest</button>
 				</div>
 				<div id="login-error" >
-					<p><span>&#8855;</span> Invalid username or password, please try again.</p>
+					<!-- <p id="error-message"><span>&#8855;</span> </p> -->
 				</div>
 
 			</div>
@@ -73,9 +73,11 @@
 				//console.log("test ");
 				var user = sanitizeString( $("#username").val());
 				var pw = sanitizeString( $("#password").val() );
+				
 				//check to catch case where login is attempted with no values
 				if(action == "login" && (user == "" || pw =="")){
-					$('#login-error').show();
+					$('#login-error').html("<p><span>&#8855;</span> Please enter a valid credentials.</p>");
+					$('#login-error').show(); //Invalid username or password, please try again.
 					return false;
 				}
 					
@@ -84,7 +86,7 @@
 				}
 				
 				$.ajax({
-					dataType: 'text',
+					dataType: 'json',
 					type: 'POST',
 					url: 'php_scripts/login.php',
 					data: {
@@ -93,11 +95,11 @@
 						password: pw
 					},
 					success: function(data) {					
-						//console.log("test " +  data);
 						//date is valid 
-						if(data == 'true'){
+						if(data.success){
 							location.assign("search.php");
 						}else{
+							$('#login-error').html("<p><span>&#8855;</span> "+data.message+"</p>");
 							$('#login-error').show();
 						}
 						

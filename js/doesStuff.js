@@ -20,15 +20,6 @@ $(document).ready(function() {
 			console.log(errorThrown);
 		}
 	});
-	
-	// On logout button click
-	$("#logout").click(function(event) {
-		// Prevent submitting empty form
-		event.preventDefault();
-		
-		// Direct to logout page
-		location.assign('php_scripts/logout.php');
-	});
 });
 
 // List papers in a table given data from AJAX call
@@ -72,4 +63,10 @@ function logout(){
 			}	
 		}
 	}); 
+}
+
+//Go back from paper page to search page
+function goBack(){
+	// Direct to logout page
+	location.assign('search.php');
 }

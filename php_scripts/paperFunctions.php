@@ -2,6 +2,8 @@
 	/*
 	 * Group 14 - Joshua Lora, Jon Aurit, Brianna Buttaccio, Joseph Oh
 	 */
+	// Sanitization File
+	require_once("sanitize.php");
 	
 	// Include the db connection code
 	require_once("DB.class.php");
@@ -11,6 +13,8 @@
 	session_start();
 	
 	// Check the post array(after form submit or ajax) to call appropriate function
+	sanitize($_POST);
+	
 	if( !empty($_POST["action"]) ){
 		if( $_POST["action"] == "get" ) {
 			if( !empty( $_POST["keyword"] ) ) {
@@ -75,8 +79,18 @@
 							":cit" => $data["citation"], 
 							":id" => $id);
 							
-			// !!!!!!! Need to add keywords and authorship !!!!!!!!!!!!
-			
+			// Insert all authors
+			$stmt = $conn->prepare("INSERT INTO authorship (userId, paperId) VALUES (:user, :paper)");
+			foreach($data["authors"] as $a) {
+				$stmt->execute(array(":paper" => $id, ":user" => $a));
+			}
+
+			// Insert all keywords
+			$stmt = $conn->prepare("INSERT INTO paper_keywords (id, keyword) VALUES (:id, :key)");
+			foreach($data["keywords"] as $k) {
+				$stmt->execute(array(":id" => $id, ":key" => $k));
+			}
+
 			// Update table with new data
 			$stmt = $conn->prepare("INSERT INTO papers (title, abstract, citation) VALUES (:tie, :abs, :cit)");
 			$stmt->execute( $params );
@@ -88,6 +102,8 @@
 			$conn->rollBack();
 			return json_encode($ex->getMessage());
 		}
+		
+		return json_encode(array("success" => "true"));
 	}
 	
 	/*
@@ -96,29 +112,35 @@
 	function removePaper($id) {
 		global $db;
 		$conn = $db->getConnection();
-		
+		//default to error message
+		$returnArray = array("message" => "An error occurred when removing research paper.");
+
 		try {
 			// Begin Transaction
 			$conn->beginTransaction();
-			
 			// Set parameters
-			$params = array(":id" => $id);
+			$params = array(":paperId" => $id);
 			
 			// Remove paper from all tables
-			$stmt = $conn->prepare("DELETE FROM papers WHERE id=:id");
-			$stmt2 = $conn->prepare("DELETE FROM paper_keywords WHERE id=:id");
-			$stmt3 = $conn->prepare("DELETE FROM authorship WHERE id=:id");
+			$stmt = $conn->prepare("DELETE FROM paper_keywords WHERE id=:paperId");
 			$stmt->execute($params);
-			$stmt2->execute($params);
-			$stmt3->execute($params);
 			
-			// Commit data
+			$stmt = $conn->prepare("DELETE FROM authorship WHERE paperId=:paperId");
+			$stmt->execute($params);
+			
+			$stmt = $conn->prepare("DELETE FROM papers WHERE id=:paperId");
+			$stmt->execute($params);
+			
+			//Commit data
 			$conn->commit();
+			$returnArray = array("success" => true);
 		} catch(PDOException $ex) {
 			// Rollback transaction in case of error
 			$conn->rollBack();
-			return json_encode($ex->getMessage());
+			return json_encode($returnArray);
 		}
+		
+		return json_encode($returnArray);
 	}
 	
 	/*
@@ -137,10 +159,34 @@
 							":abs" => $data["abstract"], 
 							":cit" => $data["citation"], 
 							":id" => $id);
-			
+							
 			// Update table with new data
 			$stmt = $conn->prepare("UPDATE papers SET title=:tie, abstract=:abs, citation=:cit WHERE id=:id");
 			$stmt->execute( $params );
+			
+			/* Authors */
+			// Remove all users
+			$stmt = $conn->prepare("DELETE FROM authorship WHERE paperId=:id");
+			$stmt->execute(array(":id" => $id));
+			
+			// Insert all authors
+			$stmt = $conn->prepare("INSERT INTO authorship (userId, paperId) VALUES (:user, :paper)");
+			foreach($data["authors"] as $a) {
+				$stmt->execute(array(":paper" => $id, ":user" => $a));
+			}
+			/* End Authors Update */
+			
+			/* Keywords */
+			// Remove all keywords
+			$stmt = $conn->prepare("DELETE FROM paper_keywords WHERE id=:id");
+			$stmt->execute(array(":id" => $id));
+			
+			// Insert all keywords
+			$stmt = $conn->prepare("INSERT INTO paper_keywords (id, keyword) VALUES (:id, :key)");
+			foreach($data["keywords"] as $k) {
+				$stmt->execute(array(":id" => $id, ":key" => $k));
+			}
+			/* End Keywords Update */
 			
 			// Commit data
 			$conn->commit();
@@ -149,5 +195,7 @@
 			$conn->rollBack();
 			return json_encode($ex->getMessage());
 		}
+		
+		return json_encode(array("success" => "true"));
 	}
 ?>

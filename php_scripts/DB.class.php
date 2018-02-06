@@ -18,19 +18,19 @@
 			// Temporary:
 			$host = "localhost";
 			$user = "root";
-			$pass = "";
+			$pass = "";//Justdoit1!
 			$db = "facresearchdb";
 			// -- Temporary
 			
 			try{
 				//open the connection
 				$this->conn = new PDO("mysql:host=$host;dbname=$db",$user,$pass);
-				
 				//change to verbose error reporting
 				$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			}catch(PDOException $e){
-				echo $e->getMessage();
-				die();
+				//setting connection to null to provide easy way to check for valid connection
+				$this->conn = null;
+				//die();
 			}
 		}
 		

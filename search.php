@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Search Papaer</title>
+	<title>Search Paper</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -31,6 +31,8 @@
 	<!-- Header -->
 	<div class="page-header">
 		<h1>Research Paper Database Search</h1>
+	</div>
+	<div class="top-buttons">
 		<button id="logoutBtn" type="button" class="btn btn-primary">Logout</button>
 	</div>
 	<!-- Header End -->
@@ -44,42 +46,25 @@
 		<div class="form-group text-right">
 			<button type="button" class="login-button btn btn-info" id="searchBtn">Search</button>
 		</div>
-		<div id="login-error" >
-			<p><span>&#8855;</span> Invalid username or password, please try again.</p>
-		</div>
+		<div id="search-error"></div>
 
 	</div>
-
-	
-	<!-- Search Area -->
-	<!--
-	<div class="row">
-		<section id="searchDiv" class="col-xs-12">
-			<input type="text" id="searchText" placeholder="Enter a keyword to search against or leave blank to view all papers..." />
-			<button type="button" id="searchBtn">Search</button>
-		</section>
-		
-	</div>
-	
-	<div id="search-error"></div>
-	-->
 	<!-- Search Area End -->
 	
 	<!-- Table -->
-	<div class="row"  id="results-section" style="display: none;">
-		<section id="tableDiv" class="col-xs-12">
-			<table>
-				<tr>
-					<th>Paper Title</th>
-					<th>View</th>
-				</tr>
-				<tbody id="populateArea">
-				
-				</tbody>
-			</table>
-		</section>
+	<div id="results-section" style="display: none;">
+		<table class="table">
+			<tr>
+				<th>Paper Title</th>
+				<th>View</th>
+			</tr>
+			<tbody id="populateArea">
+			
+			</tbody>
+		</table>
 	</div>
 	<!-- Table End -->
+
 </div>
 <!-- Main Container End -->
 
@@ -89,7 +74,7 @@
 		$("#logoutBtn").click(logout);
 	});
 
-	//simple keyup to set the enter key to trigger login
+	//simple keyup to set the enter key to trigger search
 	$("#searchText").keyup(function(event){
 		if(event.keyCode == 13){
 			searchText();
@@ -118,7 +103,7 @@
 					$.each(data, function(index, obj) {
 						html += "<tr>";
 						html += "<td>" + obj.title + "</td>";
-						html += "<td><button type='button' class='viewBtn' onclick='redirectView(this)' data-id='" + obj.id + "'>View</button></td>";
+						html += "<td><button type='button' class='view btn btn-warning' onclick='redirectView(this)' data-id='" + obj.id + "'>View</button></td>";
 						html += "</tr>";
 					});
 					
@@ -130,7 +115,7 @@
 					$("#results-section").hide();
 					$("#populateArea").html("");
 					
-					$("#search-error").html("<p>"+data.message+"</p>")
+					$("#search-error").html("<p><span>&#8855;</span> "+data.message+"</p>")
 					$("#search-error").show();
 				}
 			}

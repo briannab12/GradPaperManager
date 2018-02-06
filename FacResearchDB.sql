@@ -16,7 +16,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-CREATE DATABASE FacResearchDB;
+CREATE DATABASE IF NOT EXISTS FacResearchDB;
 USE FacResearchDB;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `authorship` (
 
 LOCK TABLES `authorship` WRITE;
 /*!40000 ALTER TABLE `authorship` DISABLE KEYS */;
-INSERT INTO `authorship` VALUES (1,1),(1,2),(1,3),(1,5),(2,3);
+INSERT INTO `authorship` VALUES (1,1),(1,2),(1,3),(1,5),(2,3), (4,3);
 /*!40000 ALTER TABLE `authorship` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -72,7 +72,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Steve','Zilora', 'sZilo', 'faculty', '5f47859188a602594556580532e814a3','sjz@it.rit.edu'),(2,'Dan','Bogaard', 'dBoga', 'faculty', 'f4f6172eb26581952a70d7199bfd2ddb','dsb@it.rit.edu'),(3,'test','test', 'test', 'public', 'bd02d934c758f72e81f70a56f3b8c575','test@it.rit.edu');
+INSERT INTO `users` VALUES (1,'Steve','Zilora', 'sZilo', 'faculty', 'ade716a6497ad27681d6953246f0613d','sjz@it.rit.edu'),(2,'Dan','Bogaard', 'dBoga', 'faculty', 'a2d2713ca92717995d98148e75dfa4f4','dsb@it.rit.edu'),(3,'test','test', 'test', 'admin', 'bd02d934c758f72e81f70a56f3b8c575','test@it.rit.edu'),(4,'John','Doe', 'jDoe', 'student', 'b36a971a1cfa45f05af150074dad1a3e','jDoe@it.rit.edu');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
